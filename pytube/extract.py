@@ -140,8 +140,16 @@ def js_url(html: str) -> str:
     :param str html:
         The html contents of the watch page.
     """
-    base_js = get_ytplayer_config(html)["assets"]["js"]
-    return "https://youtube.com" + base_js
+    ytplayer_config = get_ytplayer_config(html)
+    if "assets" in ytplayer_config:
+        if "js" in ytplayer_config["assets"]:
+            base_js = ytplayer_config["assets"]["js"]
+            return "https://youtube.com" + base_js
+    elif "args" in ytplayer_config:
+        if "player_response" in ytplayer_config["args"]:
+            player_response = json.loads(ytplayer_config["args"]["player_response"])
+
+    logger.error('no base JavaScript url found')
 
 
 def mime_type_codec(mime_type_codec: str) -> Tuple[str, List[str]]:
